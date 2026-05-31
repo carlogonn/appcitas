@@ -25,7 +25,7 @@ model User {
 
   // Relations
   photos           UserPhoto[]
-  verification     Verification?
+  verifications    Verification[]
   location         UserLocation?
   sentMessages     Message[]   @relation("SentMessages")
   receivedMessages Message[]   @relation("ReceivedMessages")
