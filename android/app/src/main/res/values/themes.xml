@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.AppCitas" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/pink_40</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/pink_10</item>
+        <item name="colorOnPrimaryContainer">@color/gray_90</item>
+        <item name="colorSecondary">@color/purple_40</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryContainer">@color/purple_10</item>
+        <item name="colorOnSecondaryContainer">@color/gray_90</item>
+        <item name="colorTertiary">@color/teal_40</item>
+        <item name="colorOnTertiary">@color/white</item>
+        <item name="colorTertiaryContainer">@color/teal_10</item>
+        <item name="colorOnTertiaryContainer">@color/gray_90</item>
+        <item name="android:statusBarColor">@color/pink_40</item>
+    </style>
+</resources>

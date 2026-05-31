@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">AppCitas</string>
+    <string name="login_title">Iniciar Sesión</string>
+    <string name="register_title">Registrarse</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Contraseña</string>
+    <string name="username_hint">Nombre de usuario</string>
+    <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="no_account">¿No tienes cuenta? Regístrate</string>
+    <string name="has_account">¿Ya tienes cuenta? Inicia sesión</string>
+    <string name="discover">Descubrir</string>
+    <string name="chats">Chats</string>
+    <string name="profile">Perfil</string>
+    <string name="settings">Ajustes</string>
+    <string name="edit_profile">Editar Perfil</string>
+    <string name="verify_account">Verificar Cuenta</string>
+    <string name="logout">Cerrar Sesión</string>
+    <string name="save_changes">Guardar Cambios</string>
+    <string name="send_message">Enviar mensaje</string>
+    <string name="match_found">¡Es un Match!</string>
+    <string name="community_chat">Chat Comunal</string>
+    <string name="icebreaker">Rompe el Hielo</string>
+    <string name="privacy">Privacidad</string>
+    <string name="show_distance">Mostrar distancia</string>
+    <string name="show_distance_description">Permite que otros vean tu distancia aproximada</string>
+</resources>

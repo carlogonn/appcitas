@@ -1,0 +1,226 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String    @id @default(uuid())
+  email            String    @unique
+  username         String    @unique
+  passwordHash     String    @map("password_hash")
+  phone            String?
+  birthDate        DateTime  @map("birth_date")
+  gender           String?
+  bio              String?
+  profilePhotoUrl  String?   @map("profile_photo_url")
+  isVerified       Boolean   @default(false) @map("is_verified")
+  verificationDate DateTime? @map("verification_date")
+  showDistance     Boolean   @default(false) @map("show_distance")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  photos           UserPhoto[]
+  verification     Verification?
+  location         UserLocation?
+  sentMessages     Message[]   @relation("SentMessages")
+  receivedMessages Message[]   @relation("ReceivedMessages")
+  matches1         Match[]     @relation("User1Matches")
+  matches2         Match[]     @relation("User2Matches")
+  swipesGiven      Swipe[]     @relation("SwipesGiven")
+  swipesReceived   Swipe[]     @relation("SwipesReceived")
+  blockedBy        Block[]     @relation("BlockedBy")
+  blocking         Block[]     @relation("Blocking")
+  reportsGiven     Report[]    @relation("ReportsGiven")
+  reportsReceived  Report[]    @relation("ReportsReceived")
+  communityMessages CommunityMessage[]
+
+  @@map("users")
+}
+
+model UserPhoto {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  photoUrl    String   @map("photo_url")
+  isPrimary   Boolean  @default(false) @map("is_primary")
+  orderIndex  Int      @default(0) @map("order_index")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_photos")
+}
+
+model UserLocation {
+  userId       String   @id @map("user_id")
+  latitude     Decimal  @db.Decimal(10, 8)
+  longitude    Decimal  @db.Decimal(11, 8)
+  lastUpdated  DateTime @default(now()) @map("last_updated")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_locations")
+}
+
+model Verification {
+  id                 String    @id @default(uuid())
+  userId             String    @map("user_id")
+  profilePhotoUrl    String    @map("profile_photo_url")
+  selfieUrl          String    @map("selfie_url")
+  livenessVideoUrl   String?   @map("liveness_video_url")
+  status             String    @default("pending")
+  aiScore            Decimal?  @map("ai_score") @db.Decimal(5, 4)
+  rejectionReason    String?   @map("rejection_reason")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  reviewedAt         DateTime? @map("reviewed_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("verifications")
+}
+
+model Message {
+  id               String   @id @default(uuid())
+  senderId         String   @map("sender_id")
+  receiverId       String?  @map("receiver_id")
+  channelId        String?  @map("channel_id")
+  encryptedContent String   @map("encrypted_content")
+  contentType      String   @default("text") @map("content_type")
+  isRead           Boolean  @default(false) @map("is_read")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  sender   User @relation("SentMessages", fields: [senderId], references: [id])
+  receiver User? @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  channel  CommunityChannel? @relation(fields: [channelId], references: [id])
+
+  @@index([senderId, receiverId])
+  @@index([channelId])
+  @@index([createdAt])
+  @@map("messages")
+}
+
+model CommunityChannel {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  messages   Message[]
+  communityMessages CommunityMessage[]
+
+  @@map("community_channels")
+}
+
+model CommunityMessage {
+  id        String   @id @default(uuid())
+  channelId String   @map("channel_id")
+  userId    String   @map("user_id")
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  channel CommunityChannel @relation(fields: [channelId], references: [id])
+  user    User             @relation(fields: [userId], references: [id])
+
+  @@index([channelId, createdAt])
+  @@map("community_messages")
+}
+
+model Match {
+  id        String   @id @default(uuid())
+  user1Id   String   @map("user1_id")
+  user2Id   String   @map("user2_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user1 User @relation("User1Matches", fields: [user1Id], references: [id])
+  user2 User @relation("User2Matches", fields: [user2Id], references: [id])
+
+  @@unique([user1Id, user2Id])
+  @@map("matches")
+}
+
+model Swipe {
+  id        String   @id @default(uuid())
+  swiperId  String   @map("swiper_id")
+  swipedId  String   @map("swiped_id")
+  isLike    Boolean  @map("is_like")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  swiper User @relation("SwipesGiven", fields: [swiperId], references: [id])
+  swiped User @relation("SwipesReceived", fields: [swipedId], references: [id])
+
+  @@unique([swiperId, swipedId])
+  @@map("swipes")
+}
+
+model Block {
+  id        String   @id @default(uuid())
+  blockerId String   @map("blocker_id")
+  blockedId String   @map("blocked_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  blocker User @relation("Blocking", fields: [blockerId], references: [id])
+  blocked User @relation("BlockedBy", fields: [blockedId], references: [id])
+
+  @@unique([blockerId, blockedId])
+  @@map("blocks")
+}
+
+model Report {
+  id         String   @id @default(uuid())
+  reporterId String   @map("reporter_id")
+  reportedId String   @map("reported_id")
+  reason     String
+  description String?
+  status     String   @default("pending")
+  createdAt  DateTime @default(now()) @map("created_at")
+  reviewedAt DateTime? @map("reviewed_at")
+
+  reporter User @relation("ReportsGiven", fields: [reporterId], references: [id])
+  reported User @relation("ReportsReceived", fields: [reportedId], references: [id])
+
+  @@map("reports")
+}
+
+model IcebreakerTopic {
+  id        String   @id @default(uuid())
+  topicText String   @map("topic_text")
+  category  String
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("icebreaker_topics")
+}
+
+model BannedWord {
+  id        String   @id @default(uuid())
+  word      String
+  severity  String   @default("warning")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([word])
+  @@map("banned_words")
+}
+
+model AppSetting {
+  id           String   @id @default(uuid())
+  settingKey   String   @unique @map("setting_key")
+  settingValue String   @map("setting_value")
+  description  String?
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("app_settings")
+}
+
+model AdConfiguration {
+  id         String   @id @default(uuid())
+  adUnitId   String   @map("ad_unit_id")
+  placement  String
+  isActive   Boolean  @default(true) @map("is_active")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("ad_configurations")
+}
