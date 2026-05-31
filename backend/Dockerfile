@@ -43,4 +43,4 @@ RUN mkdir -p uploads
 EXPOSE 3000
 
 # Start with ts-node
-CMD ["npx", "ts-node", "src/app.ts"]
+CMD ["npx", "ts-node", "--transpile-only", "src/app.ts"]

@@ -113,11 +113,11 @@ export class AuthService {
 
   private async generateTokens(userId: string) {
     const accessToken = jwt.sign({ userId }, env.JWT_SECRET, {
-      expiresIn: env.JWT_EXPIRES_IN,
+      expiresIn: '15m',
     });
 
     const refreshToken = jwt.sign({ userId }, env.JWT_REFRESH_SECRET, {
-      expiresIn: env.JWT_REFRESH_EXPIRES_IN,
+      expiresIn: '7d',
     });
 
     // Store refresh token in Redis
