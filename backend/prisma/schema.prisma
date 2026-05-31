@@ -87,7 +87,6 @@ model Message {
   id               String   @id @default(uuid())
   senderId         String   @map("sender_id")
   receiverId       String?  @map("receiver_id")
-  channelId        String?  @map("channel_id")
   encryptedContent String   @map("encrypted_content")
   contentType      String   @default("text") @map("content_type")
   isRead           Boolean  @default(false) @map("is_read")
@@ -95,10 +94,8 @@ model Message {
 
   sender   User @relation("SentMessages", fields: [senderId], references: [id])
   receiver User? @relation("ReceivedMessages", fields: [receiverId], references: [id])
-  channel  CommunityChannel? @relation(fields: [channelId], references: [id])
 
   @@index([senderId, receiverId])
-  @@index([channelId])
   @@index([createdAt])
   @@map("messages")
 }
@@ -109,7 +106,6 @@ model CommunityChannel {
   description String?
   createdAt   DateTime @default(now()) @map("created_at")
 
-  messages   Message[]
   communityMessages CommunityMessage[]
 
   @@map("community_channels")
