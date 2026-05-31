@@ -45,7 +45,7 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res: Response, next: 
 router.get('/:id', authMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const user = await prisma.user.findUnique({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
       select: {
         id: true,
         email: true,

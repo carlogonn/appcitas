@@ -117,7 +117,7 @@ router.get('/photos', authMiddleware, async (req: AuthRequest, res: Response, ne
 // Delete photo
 router.delete('/photos/:photoId', authMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { photoId } = req.params;
+    const photoId = req.params.photoId as string;
 
     const photo = await prisma.userPhoto.findFirst({
       where: { id: photoId, userId: req.userId! },
@@ -199,7 +199,7 @@ router.patch('/photos/reorder', authMiddleware, async (req: AuthRequest, res: Re
 // Set primary photo
 router.patch('/photos/:photoId/primary', authMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { photoId } = req.params;
+    const photoId = req.params.photoId as string;
 
     const photo = await prisma.userPhoto.findFirst({
       where: { id: photoId, userId: req.userId! },
