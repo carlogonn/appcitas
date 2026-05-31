@@ -16,11 +16,10 @@ RUN npx prisma generate
 # Copy source code
 COPY . .
 
-# Build TypeScript
-RUN npm run build
+# No TypeScript build needed - we use ts-node at runtime
 
 # Production stage
-FROM node:20-alpine AS production
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -28,14 +27,14 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Install production dependencies only
-RUN npm install --omit=dev
+# Install all dependencies (including dev for ts-node)
+RUN npm install
 
 # Generate Prisma client
 RUN npx prisma generate
 
-# Copy built files from builder stage
-COPY --from=builder /app/dist ./dist
+# Copy source code
+COPY . .
 
 # Create uploads directory
 RUN mkdir -p uploads
@@ -43,5 +42,5 @@ RUN mkdir -p uploads
 # Expose port
 EXPOSE 3000
 
-# Start the application
-CMD ["npm", "start"]
+# Start with ts-node
+CMD ["npx", "ts-node", "src/app.ts"]
